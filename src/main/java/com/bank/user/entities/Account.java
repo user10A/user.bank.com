@@ -1,8 +1,6 @@
 package com.bank.user.entities;
 
-import com.bank.user.exceptions.CustomIllegalArgumentException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -26,10 +24,11 @@ import java.math.BigDecimal;
 public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "acc_gen")
-    @SequenceGenerator(name = "acc_gen",sequenceName = "acc_seq", allocationSize = 1)
+    @SequenceGenerator(name = "acc_gen",sequenceName = "acc_seq", allocationSize = 1,initialValue =21)
     private Long id;
     private String accountNumber;
     @Column(nullable =false)
+    @Builder.Default
     private BigDecimal balance = BigDecimal.ZERO;
     @ManyToOne
     @JsonIgnore
@@ -40,7 +39,7 @@ public class Account {
             throw new IllegalArgumentException("Сумма списания должна быть положительной");
         }
         if (amount.compareTo(balance) > 0) {
-            throw new CustomIllegalArgumentException("Недостаточно средств для списания");
+            throw new IllegalArgumentException("Недостаточно средств для списания");
         }
         this.balance = this.balance.subtract(amount);
     }

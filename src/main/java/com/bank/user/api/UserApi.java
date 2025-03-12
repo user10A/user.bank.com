@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,14 +28,11 @@ public class UserApi {
 
     private final UserService userService;
 
-//    @PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
     @PostMapping("/create")
-    @Operation(
-            summary = "Создать нового пользователя",
-            description = "Добавляет нового пользователя в систему, основываясь на предоставленных данных."
-    )
-    public SimpleResponse createUser(@Valid @RequestBody UserRequest user) {
-        return userService.createUser(user);
+    @Operation(summary = "Создать нового пользователя", description = "Добавляет нового пользователя в систему.")
+    public ResponseEntity<SimpleResponse> createUser(@Valid @RequestBody UserRequest user) {
+        SimpleResponse response = userService.createUser(user);
+        return ResponseEntity.status(response.getHttpStatus()).body(response);
     }
 
     @GetMapping("/getUserById/{userId}")

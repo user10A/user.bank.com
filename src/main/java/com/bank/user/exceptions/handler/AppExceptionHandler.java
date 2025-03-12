@@ -4,57 +4,76 @@ import com.bank.user.exceptions.AlreadyExistsException;
 import com.bank.user.exceptions.ExceptionResponse;
 import com.bank.user.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.client.HttpClientErrorException;
 
-@RestControllerAdvice
 @RequiredArgsConstructor
-@Slf4j
+@RestControllerAdvice
 public class AppExceptionHandler {
-    private final MessageSource messageSource;
 
     @ExceptionHandler(AlreadyExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ExceptionResponse alreadyExistsException(AlreadyExistsException e){
+    public ExceptionResponse handleAlreadyExistsException(AlreadyExistsException e) {
         return ExceptionResponse.builder()
-                .message(messageSource.getMessage(e.getMessage(), e.getArgs(), LocaleContextHolder.getLocale()))
+                .message(e.getMessage())
                 .exceptionClassName(e.getClass().getSimpleName())
                 .httpStatus(HttpStatus.CONFLICT)
                 .build();
     }
+
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ExceptionResponse notFoundException(NotFoundException e){
-        log.warn("NotFoundException: -------------------- {}", e.getMessage());
+    public ExceptionResponse handleNotFoundException(NotFoundException e) {
         return ExceptionResponse.builder()
-                .message(messageSource.getMessage(e.getMessage(), e.getArgs(), LocaleContextHolder.getLocale()))
+                .message(e.getMessage())
                 .exceptionClassName(e.getClass().getSimpleName())
                 .httpStatus(HttpStatus.NOT_FOUND)
                 .build();
     }
+
     @ExceptionHandler(IllegalStateException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ExceptionResponse HandleConflictException(HttpClientErrorException.Conflict e) {
+    public ExceptionResponse handleIllegalStateException(IllegalStateException e) {
         return ExceptionResponse.builder()
-                .httpStatus(HttpStatus.CONFLICT)
-                .exceptionClassName(e.getClass().getSimpleName())
                 .message(e.getMessage())
+                .exceptionClassName(e.getClass().getSimpleName())
+                .httpStatus(HttpStatus.CONFLICT)
                 .build();
     }
+
     @ExceptionHandler(IllegalArgumentException.class)
-    @ResponseStatus(HttpStatus.SEE_OTHER)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ExceptionResponse handleIllegalArgumentException(IllegalArgumentException e) {
         return ExceptionResponse.builder()
-                .exceptionClassName(e.getClass().getSimpleName())
-                .httpStatus(HttpStatus.SEE_OTHER)
                 .message(e.getMessage())
+                .exceptionClassName(e.getClass().getSimpleName())
+                .httpStatus(HttpStatus.BAD_REQUEST)
+                .build();
+    }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ExceptionResponse handleGlobalException(Exception e) {
+        return ExceptionResponse.builder()
+                .message(e.getMessage())
+                .exceptionClassName(e.getClass().getSimpleName())
+                .httpStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+                .build();
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ExceptionResponse handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+        return ExceptionResponse.builder()
+                .exceptionClassName(e.getClass().getSimpleName())
+                .httpStatus(HttpStatus.BAD_REQUEST)
+                .message("Ошибка чтения запроса: " + e.getMostSpecificCause().getMessage())
                 .build();
     }
 
 }
+
+
