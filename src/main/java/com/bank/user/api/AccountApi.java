@@ -1,0 +1,64 @@
+package com.bank.user.api;
+
+import com.bank.user.dto.AccountRequest;
+import com.bank.user.dto.SimpleResponse;
+import com.bank.user.dto.TransactionRequest;
+import com.bank.user.dto.UserResponse;
+import com.bank.user.service.AccountService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping(("api/v3/accounts"))
+@CrossOrigin
+@Tag(name = "Accounts api", description = "APIs for Accounts")
+@RequiredArgsConstructor
+public class AccountApi {
+    private final AccountService accountService;
+
+    @PostMapping("/create")
+    @Operation(
+            summary = "Создание нового аккаунта",
+            description = "Метод создает новый аккаунт на основе предоставленных данных AccountRequest."
+    )
+    public SimpleResponse createAccount(@Valid @RequestBody AccountRequest account) {
+        return accountService.createAccount(account);
+    }
+
+    @PutMapping("/deposit")
+    @Operation(
+            summary = "Пополнение баланса",
+            description = "Метод добавляет указанную сумму на баланс указанного аккаунта."
+    )
+    public SimpleResponse deposit(@Valid @RequestBody TransactionRequest transactionRequest) {
+        return accountService.deposit(transactionRequest);
+    }
+
+    @PutMapping("/withdraw")
+    @Operation(
+            summary = "Снятие средств",
+            description = "Метод снимает указанную сумму с баланса указанного аккаунта."
+    )
+    public SimpleResponse withdraw(@Valid @RequestBody TransactionRequest transactionRequest) {
+        return accountService.withdraw(transactionRequest);
+    }
+
+    @GetMapping("/get/{userId}")
+    @Operation(
+            summary = "Получение счетов пользователя",
+            description = "Метод выводит все счета пользователя по его уникальному идентификатору (ID)"
+    )
+    public UserResponse getAccountsByUserId(@PathVariable Long userId) {
+        return accountService.getAccountsByUserId(userId);
+    }
+}

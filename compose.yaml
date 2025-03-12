@@ -1,0 +1,38 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: bank-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: erkin
+      POSTGRES_DB: bank
+    ports:
+      - "5433:5432"  # Порт хоста:порт контейнера
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .  # Собирает образ из Dockerfile в текущей директории
+    container_name: bank-app
+    restart: always
+    ports:
+      - "8081:8081"  # Порт хоста:порт контейнера
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/bank
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: erkin
+    depends_on:
+      postgres:
+        condition: service_healthy  # Ждем, пока PostgreSQL станет здоровым
+
+volumes:
+  postgres_data:

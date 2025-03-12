@@ -1,0 +1,38 @@
+spring:
+  datasource:
+    url: 'jdbc:postgresql://postgres:5432/bank'
+    username: 'postgres'
+    password: 'erkin'
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+    open-in-view: false
+    properties:
+      hibernate.format_sql: true
+      hibernate.use_sql_comments: true
+    database: postgresql
+  sql:
+    init:
+      mode: always
+  application:
+    name: user
+
+server:
+  port: 8081
+
+
+#management:
+#  endpoints:
+#    web:
+#      exposure:
+#        include: "*"
+#
+#logging:
+#  level:
+#    root: INFO
+#    org.hibernate.SQL: DEBUG # Hibernate SQL
+#    org.springframework: DEBUG # Spring Framework
+
+

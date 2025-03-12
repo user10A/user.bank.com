@@ -1,0 +1,20 @@
+DATABASE_URL=jdbc:postgresql://host.docker.internal:5432/bank
+POSTGRES_DB=bank
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=erkin
+SERVER_PORT=8081
+
+
+
+#spring:
+#  datasource:
+#    url: jdbc:postgresql://host.docker.internal:5432/userdb
+#        username: ${POSTGRES_USER}
+#        password: ${POSTGRES_PASSWORD}
+#        driver-class-name: org.postgresql.Driver
+#      jpa:
+#        hibernate:
+#          ddl-auto: update
+#        show-sql: true
+
+#  url:jdbc:postgresql://localhost:5432/userdb
