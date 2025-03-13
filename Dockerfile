@@ -17,6 +17,6 @@ ENV JAVA_OPTS=""
 
 COPY --from=build /app/target/*.jar app.jar
 
-EXPOSE 8081
+EXPOSE 2024
 
 CMD ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]

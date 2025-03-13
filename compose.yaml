@@ -1,38 +1,71 @@
-version: "3.8"
-
+version: "3.9"
 services:
-  postgres:
-    image: postgres:latest
-    container_name: bank-postgres
-    restart: always
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: erkin
-      POSTGRES_DB: bank
-    ports:
-      - "5433:5432"  # Порт хоста:порт контейнера
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  app:
-    build: .  # Собирает образ из Dockerfile в текущей директории
-    container_name: bank-app
+  backend:
+    image: 'postgres:latest'
+    container_name: bank
     restart: always
     ports:
-      - "8081:8081"  # Порт хоста:порт контейнера
+      - "2024:2024"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/bank
+      SPRING_PROFILES_ACTIVE: main
+      SERVER_PORT: 2024
+      SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/bank
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: erkin
     depends_on:
-      postgres:
-        condition: service_healthy  # Ждем, пока PostgreSQL станет здоровым
+      - database
+
+  database:
+    image: postgres
+    container_name: bank_db
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: bank
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: erkin
+    volumes:
+      - db_data:/var/lib/postgresql/data
 
 volumes:
-  postgres_data:
+  db_data:
+
+#version: "3.8"
+#
+#services:
+#  postgres:
+#    image: postgres:latest
+#    container_name: bank-postgres
+#    restart: always
+#    environment:
+#      POSTGRES_USER: postgres
+#      POSTGRES_PASSWORD: erkin
+#      POSTGRES_DB: bank
+#    ports:
+#      - "5433:5432"
+#    volumes:
+#      - postgres_data:/var/lib/postgresql/data
+#      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+#    healthcheck:
+#      test: ["CMD-SHELL", "pg_isready -U postgres"]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 5
+#
+#  app:
+#    build: .
+#    container_name: bank-app
+#    restart: always
+#    ports:
+#      - "8081:8081"
+#    environment:
+#      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/bank
+#      SPRING_DATASOURCE_USERNAME: postgres
+#      SPRING_DATASOURCE_PASSWORD: erkin
+#    depends_on:
+#      postgres:
+#        condition: service_healthy
+#
+#volumes:
+#  postgres_data:

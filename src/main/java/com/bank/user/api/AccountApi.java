@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,8 +32,9 @@ public class AccountApi {
             summary = "Создание нового аккаунта",
             description = "Метод создает новый аккаунт на основе предоставленных данных AccountRequest."
     )
-    public SimpleResponse createAccount(@Valid @RequestBody AccountRequest account) {
-        return accountService.createAccount(account);
+    public ResponseEntity<SimpleResponse> createAccount(@Valid @RequestBody AccountRequest account) {
+        SimpleResponse response = accountService.createAccount(account);
+        return ResponseEntity.status(response.getHttpStatus()).body(response);
     }
 
     @PutMapping("/deposit")
@@ -40,8 +42,9 @@ public class AccountApi {
             summary = "Пополнение баланса",
             description = "Метод добавляет указанную сумму на баланс указанного аккаунта."
     )
-    public SimpleResponse deposit(@Valid @RequestBody TransactionRequest transactionRequest) {
-        return accountService.deposit(transactionRequest);
+    public ResponseEntity<SimpleResponse> deposit(@Valid @RequestBody TransactionRequest transactionRequest) {
+        SimpleResponse response = accountService.deposit(transactionRequest);
+        return ResponseEntity.status(response.getHttpStatus()).body(response);
     }
 
     @PutMapping("/withdraw")
@@ -49,8 +52,9 @@ public class AccountApi {
             summary = "Снятие средств",
             description = "Метод снимает указанную сумму с баланса указанного аккаунта."
     )
-    public SimpleResponse withdraw(@Valid @RequestBody TransactionRequest transactionRequest) {
-        return accountService.withdraw(transactionRequest);
+    public ResponseEntity<SimpleResponse> withdraw(@Valid @RequestBody TransactionRequest transactionRequest) {
+        SimpleResponse response = accountService.withdraw(transactionRequest);
+        return ResponseEntity.status(response.getHttpStatus()).body(response);
     }
 
     @GetMapping("/get/{userId}")
